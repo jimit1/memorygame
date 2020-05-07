@@ -55,6 +55,15 @@ $(document).ready(function () {
   ];
   var randNum = 0;
   var cards = [];
+  var revealCard = 2;
+  var gameType = 0;
+  var choiceOne = "";
+  var choiceTwo = "";
+  var counterOne = 0;
+  var counterTwo = 0;
+  var score = 0;
+  $("#score").text(`Score: ${score}`);
+
   function randNumber(num) {
     randNum = Math.floor(Math.random() * num);
     return randNum;
@@ -75,7 +84,6 @@ $(document).ready(function () {
       }
       cards.splice(i + num / 2, 1, cards[i]);
     }
-    console.log(cards);
   }
 
   function shuffleCards(array) {
@@ -115,11 +123,12 @@ $(document).ready(function () {
     for (var j = 0; j < num; j++) {
       $(".container").append(`<div class="row" id=${j}></div>`);
       for (var i = 0; i < num; i++) {
-        $(`#${j}`).append(`<div class="col-md-${num2} mb-3">
+        $(`#${j}`).append(`<div class="col-md-${num2} mb-3" id="d${counter}">
       <img src="./assets/0.jpg" class="choice img-fluid rounded" data-id="${counter}"/></div>`);
         counter++;
       }
     }
+    revealCard = 0;
   }
 
   function loadGame(num) {
@@ -130,18 +139,49 @@ $(document).ready(function () {
   }
 
   $(document).on("click", ".choice", function () {
-    var counter = $(this).attr("data-id");
-    $(this).attr("src", `${cards[counter]}`);
-    console.log(counter);
+    if (revealCard === 0) {
+      counterOne = $(this).attr("data-id");
+      $(this).attr("src", `${cards[counterOne]}`);
+      choiceOne = cards[counterOne];
+      console.log(choiceOne);
+      window.setTimeout(function () {
+        revealCard = 1;
+      }, 10);
+    }
+    if (revealCard === 1) {
+      counterTwo = $(this).attr("data-id");
+      $(this).attr("src", `${cards[counterTwo]}`);
+      revealCard = 2;
+      choiceTwo = cards[counterTwo];
+      console.log(choiceTwo);
+      if (choiceOne === choiceTwo) {
+        score++;
+        $("#score").text(`Score: ${score}`);
+        revealCard = 0;
+      } else {
+        window.setTimeout(function () {
+          $(`#d${counterOne}`).html(
+            `<img src="./assets/0.jpg" class="choice img-fluid rounded" data-id="${counterOne}"/>`
+          );
+          $(`#d${counterTwo}`).html(
+            `<img src="./assets/0.jpg" class="choice img-fluid rounded" data-id="${counterTwo}"/>`
+          );
+          revealCard = 0;
+        }, 3000);
+      }
+    }
   });
 
   $("#easyGame").on("click", function () {
-    loadGame(2);
+    gameType = 2;
+    loadGame(gameType);
   });
   $("#mediumGame").on("click", function () {
-    loadGame(4);
+    gameType = 4;
+    loadGame(gameType);
   });
   $("#hardGame").on("click", function () {
-    loadGame(6);
+    gameType = 6;
+    loadGame(gameType);
   });
 });
